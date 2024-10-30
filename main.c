@@ -4,6 +4,7 @@
 #include <ctype.h>
 
 #define LINE_LENGTH 100
+#define MAX_LINES 1000
 #define USERNAME_LENGTH 20
 #define PASSWORD_LENGTH 20
 
@@ -12,6 +13,7 @@ int manageStudents();
 int addStudents();
 int viewStudents();
 int removeStudents();
+int updateStudents();
 
 typedef struct
 {
@@ -128,7 +130,7 @@ int manageStudents()
     else if (toupper(option) == 'U')
     {
         // call updateStudents function which adds new students
-        // updateStudents();
+        updateStudents();
     }
     else if (toupper(option) == 'E')
     {
@@ -162,7 +164,7 @@ int addStudents()
         fseek(file, 0, SEEK_END);
         if (ftell(file) == 0)
         {
-            fprintf(file, "ID, firstName, lastName, Email\n");
+            fprintf(file, "ID,firstName,lastName,Email\n");
         }
 
     while (1)
@@ -170,19 +172,19 @@ int addStudents()
         char r;
         
         printf("Enter student ID: ");
-        scanf(" %s", &student.id);
+        scanf(" %s", student.id);
 
         printf("Enter First Name: ");
-        scanf(" %s", &student.firstName);
+        scanf(" %s", student.firstName);
 
         printf("Enter Last Name: ");
-        scanf(" %s", &student.lastName);
+        scanf(" %s", student.lastName);
 
         printf("Enter Email: ");
-        scanf(" %s", &student.email);
+        scanf(" %s", student.email);
 
         // Write the data into the file
-        fprintf(file, "%s, %s, %s, %s\n", student.id, student.firstName, student.lastName, student.email);
+        fprintf(file, "%s,%s,%s,%s\n", student.id, student.firstName, student.lastName, student.email);
 
         printf("Student record added successfully!!!!\n");
 
@@ -202,13 +204,14 @@ int viewStudents()
     FILE *file = fopen("students.csv", "r");
     if (file == NULL)
     {
-        printf("\033[0;31m No Record found... \033[0m\n");
+        printf("\033[0;31m No Records found!!! \033[0m\n");
         manageStudents();
     }
 
     fgets(line, sizeof(line), file);
     printf("%-10s %-15s %-15s %-30s\n", "ID", "First Name", "Last Name", "Email");
     printf("%-10s %-15s %-15s %-30s\n", "-----", "----------", "----------", "-----------------------");
+
     while(fgets(line, sizeof(line), file) != NULL)
     {
         line[strcspn(line, "\n")] = 0;
@@ -227,11 +230,132 @@ int viewStudents()
 
     }
     fclose(file);
-    manageStudents()
+    manageStudents();
 }
 
 
 int removeStudents()
 {
+    char id[10];
+    char c;
+    int count = 0;
+    int skip_index= -1;
+    std student;
 
+    printf("Enter the student ID: ");
+    scanf("%s", id);
+
+    FILE *file = fopen("students.csv", "r");
+    if (file == NULL)
+    {
+        printf("\033[0;31m File Not found!!!! \033[0m\n");
+        manageStudents();
+    }
+
+    char line[MAX_LINES][LINE_LENGTH];
+    while(fgets(line[count], sizeof(line[count]), file) != NULL)
+    {
+        char check_line[LINE_LENGTH];
+        strcpy(check_line, line[count]);
+        char *token = strtok(check_line, ",");
+        char file_id[10];
+        strcpy(file_id, token);
+
+        if (strcmp(file_id, id) == 0)
+        {
+            skip_index = count;
+        }
+        count++;
+    }
+    fclose(file);
+
+    if (skip_index == -1)
+    {
+        printf("\033[0;31m Student with ID %s doesn't exist!!! \033[0m\n", id);
+        manageStudents();
+
+    }
+
+    file = fopen("students.csv", "w");
+    if (file == NULL) {
+        printf("\033[0;31mError writing to file!\033[0m\n");
+        return 1;
+    }
+
+    for (int i = 0; i < count; i++)
+    {
+        if (skip_index != i)
+        {
+            fputs(line[i], file);
+        }
+    }
+    fclose(file);
+    printf("Student with ID %s has been removed!!!\n", id);
+    manageStudents();
+}
+
+
+int updateStudents()
+{
+    char id[10];
+    int count = 0;
+    int skip_index = -1;
+    std student;
+    printf("Enter the Student ID: ");
+    scanf("%s", id);
+
+    FILE *file = fopen("students.csv", "r");
+    if (file == NULL)
+    {
+        printf("\033[0;31m File Not found!!!! \033[0m\n");
+        return 1;
+    }
+
+    char line[MAX_LINES][LINE_LENGTH];
+    while(fgets(line[count], sizeof(line[count]), file) != NULL)
+    {
+        char check_line[LINE_LENGTH];
+        strcpy(check_line, line[count]);
+        char *token = strtok(check_line, ",");
+        char file_id[10];
+        strcpy(file_id, token);
+
+        if (strcmp(id, file_id) == 0)
+        {
+            skip_index = count;
+            printf("Enter First Name: ");
+            scanf(" %s", student.firstName);
+
+            printf("Enter Last Name: ");
+            scanf(" %s", student.lastName);
+
+            printf("Enter Email: ");
+            scanf(" %s", student.email);
+
+            snprintf(line[skip_index], LINE_LENGTH, "%s,%s,%s,%s\n",
+                     id, student.firstName, student.lastName, student.email);
+        }
+        count++;
+    }
+
+    if(skip_index == -1)
+    {
+        printf("\033[0;31m Student with ID %s doesn't exist!!! \033[0m\n", id);
+        manageStudents();
+    }
+
+    file = fopen("students.csv", "w");
+    if (file == NULL) {
+        printf("\033[0;31mError writing to file!\033[0m\n");
+        return 1;
+    }
+    
+    for (int i = 0; i < count; i++)
+    {
+        fputs(line[i], file);
+    }
+    fclose(file);
+    printf("Student with ID %s has been updated!!!\n", id);
+
+    manageStudents();
 }
