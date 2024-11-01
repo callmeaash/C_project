@@ -16,5 +16,7 @@ School Management System is a project that allows users to manage the records of
 
 - Update the record of a student.
 
+- Search the record of a student.
+
 ### USE
 Run the code via command line using respective compiler and choose the letter respetive to a option.

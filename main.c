@@ -14,6 +14,8 @@ int addStudents();
 int viewStudents();
 int removeStudents();
 int updateStudents();
+int searchStudents();
+void strlower(char *word);
 
 typedef struct
 {
@@ -107,6 +109,7 @@ int manageStudents()
     printf("A ---\tAdd Students\n");
     printf("R ---\tRemove Students\n");
     printf("U ---\tUpdate Students\n");
+    printf("S ---\tSearch Students\n");
     printf("E ---\tExit\n");
 
     printf("\nChoose: ");
@@ -132,12 +135,16 @@ int manageStudents()
         // call updateStudents function which adds new students
         updateStudents();
     }
+    else if (toupper(option) == 'S')
+    {
+        // call searchStudents function which search students
+        searchStudents();
+    }
     else if (toupper(option) == 'E')
     {
         // Exit the program
         printf("Exiting the program..........");
         return 0;
-        
     }
     else
     {
@@ -308,7 +315,7 @@ int updateStudents()
     if (file == NULL)
     {
         printf("\033[0;31m File Not found!!!! \033[0m\n");
-        return 1;
+        manageStudents();
     }
 
     char line[MAX_LINES][LINE_LENGTH];
@@ -337,7 +344,7 @@ int updateStudents()
         }
         count++;
     }
-
+    fclose(file);
     if(skip_index == -1)
     {
         printf("\033[0;31m Student with ID %s doesn't exist!!! \033[0m\n", id);
@@ -359,3 +366,66 @@ int updateStudents()
 
     manageStudents();
 }
+
+
+int searchStudents()
+{
+    char name[20];
+    int count = 0;
+    int found = 0;
+    std student;
+
+    printf("Enter the Student First Name: ");
+    scanf("%s", name);
+
+    FILE *file = fopen("students.csv", "r");
+    if (file == NULL)
+    {
+        printf("\033[0;31m File Not found!!!! \033[0m\n");
+        manageStudents();
+    }
+
+    char line[MAX_LINES][LINE_LENGTH];
+    while(fgets(line[count], sizeof(line[count]), file) != NULL)
+    {
+        char *token = strtok(line[count], ",");
+        strcpy(student.id, token);
+        token = strtok(NULL, ",");
+        strcpy(student.firstName, token);
+        strlower(name);
+        strlower(student.firstName);
+
+        if (strcmp(name, student.firstName) == 0)
+        {
+            found++;
+            token = strtok(NULL, ",");
+            strcpy(student.lastName, token);
+            token = strtok(NULL, ",");
+            strcpy(student.email, token);
+            student.email[strcspn(student.email, "\n")] = 0;
+            if (found == 1)
+            {
+                printf("%-10s %-15s %-15s %-30s\n", "ID", "First Name", "Last Name", "Email");
+                printf("%-10s %-15s %-15s %-30s\n", "-----", "----------", "----------", "-----------------------");
+            }
+            printf("%-10s %-15s %-15s %-30s\n", student.id, student.firstName, student.lastName, student.email);
+        }
+        count++;
+    }
+    fclose(file);
+    if(found == 0)
+    {
+        printf("\033[0;31m Student with FirstName %s doesn't exist!!! \033[0m\n", name);
+    }
+    manageStudents();
+}
+
+void strlower(char *word)
+{
+    int i = 0;
+    while (word[i] != '\0') {
+        word[i] = tolower(word[i]);
+        i++;
+    }
+}
+
