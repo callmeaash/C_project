@@ -1,2 +1,3 @@
 *.csv
+!adminData.csv
 *.exe
