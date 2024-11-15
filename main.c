@@ -29,9 +29,23 @@ typedef struct
 int main(void)
 {
     // Print the Heading
-    printf("\nSCHOOL MANAGEMENT SYSTEM\n");
-
-    userAuthentication();
+    printf("\nSTUDENT MANAGEMENT SYSTEM\n\n");
+    char n;
+    printf("Select an option: \n\n");
+    printf("L --- Login\n");
+    printf("E --- Exit\n");
+    while (1){
+        printf("Option: ");
+        scanf("%c", &n);
+        if (toupper(n) == 'L')
+            return userAuthentication();
+        else if (toupper(n) == 'E'){
+            printf("Exiting the program......");
+            return 0;
+        }
+        else
+            printf("Invalid Option!!!!!");
+        }
     return 0;
 }
 
@@ -118,27 +132,27 @@ int manageStudents()
     if (toupper(option) == 'V')
     {
         // call viewStudents function which lists all students
-        viewStudents();
+        return viewStudents();
     }
     else if (toupper(option) == 'A')
     {
         // call addStudents function which adds new students
-        addStudents();
+        return addStudents();
     }
     else if (toupper(option) == 'R')
     {
         // call removeStudents function which removes existing students
-        removeStudents();
+        return removeStudents();
     }
     else if (toupper(option) == 'U')
     {
         // call updateStudents function which adds new students
-        updateStudents();
+        return updateStudents();
     }
     else if (toupper(option) == 'S')
     {
         // call searchStudents function which search students
-        searchStudents();
+        return searchStudents();
     }
     else if (toupper(option) == 'E')
     {
@@ -150,7 +164,7 @@ int manageStudents()
     {
         // Reshow the menu
         printf("\033[0;31m Invalid Option \033[0m\n");
-        manageStudents();
+        return manageStudents();
     }
 }
 
@@ -201,7 +215,7 @@ int addStudents()
         if (r == 'n') break;
     }
     fclose(file);
-    manageStudents();
+    return manageStudents();
 }
 
 int viewStudents()
@@ -212,7 +226,7 @@ int viewStudents()
     if (file == NULL)
     {
         printf("\033[0;31m No Records found!!! \033[0m\n");
-        manageStudents();
+        return manageStudents();
     }
 
     fgets(line, sizeof(line), file);
@@ -237,7 +251,7 @@ int viewStudents()
 
     }
     fclose(file);
-    manageStudents();
+    return manageStudents();
 }
 
 
@@ -256,7 +270,7 @@ int removeStudents()
     if (file == NULL)
     {
         printf("\033[0;31m File Not found!!!! \033[0m\n");
-        manageStudents();
+        return manageStudents();
     }
 
     char line[MAX_LINES][LINE_LENGTH];
@@ -279,7 +293,7 @@ int removeStudents()
     if (skip_index == -1)
     {
         printf("\033[0;31m Student with ID %s doesn't exist!!! \033[0m\n", id);
-        manageStudents();
+        return manageStudents();
 
     }
 
@@ -298,7 +312,7 @@ int removeStudents()
     }
     fclose(file);
     printf("Student with ID %s has been removed!!!\n", id);
-    manageStudents();
+    return manageStudents();
 }
 
 
@@ -315,7 +329,7 @@ int updateStudents()
     if (file == NULL)
     {
         printf("\033[0;31m File Not found!!!! \033[0m\n");
-        manageStudents();
+        return manageStudents();
     }
 
     char line[MAX_LINES][LINE_LENGTH];
@@ -348,7 +362,7 @@ int updateStudents()
     if(skip_index == -1)
     {
         printf("\033[0;31m Student with ID %s doesn't exist!!! \033[0m\n", id);
-        manageStudents();
+        return manageStudents();
     }
 
     file = fopen("students.csv", "w");
@@ -364,7 +378,7 @@ int updateStudents()
     fclose(file);
     printf("Student with ID %s has been updated!!!\n", id);
 
-    manageStudents();
+    return manageStudents();
 }
 
 
@@ -382,7 +396,7 @@ int searchStudents()
     if (file == NULL)
     {
         printf("\033[0;31m File Not found!!!! \033[0m\n");
-        manageStudents();
+        return manageStudents();
     }
 
     char line[MAX_LINES][LINE_LENGTH];
@@ -417,7 +431,7 @@ int searchStudents()
     {
         printf("\033[0;31m Student with FirstName %s doesn't exist!!! \033[0m\n", name);
     }
-    manageStudents();
+    return manageStudents();
 }
 
 void strlower(char *word)
