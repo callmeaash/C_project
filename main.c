@@ -22,6 +22,7 @@ typedef struct
     char id[10];
     char firstName[20];
     char lastName[20];
+    char class[10];
     char email[40];
 } std;
 
@@ -185,7 +186,7 @@ int addStudents()
         fseek(file, 0, SEEK_END);
         if (ftell(file) == 0)
         {
-            fprintf(file, "ID,firstName,lastName,Email\n");
+            fprintf(file, "ID,firstName,lastName,class,Email\n");
         }
 
     while (1)
@@ -201,11 +202,14 @@ int addStudents()
         printf("Enter Last Name: ");
         scanf(" %s", student.lastName);
 
+        printf("Enter Class: ");
+        scanf(" %10[^\n]", student.class);
+
         printf("Enter Email: ");
         scanf(" %s", student.email);
 
         // Write the data into the file
-        fprintf(file, "%s,%s,%s,%s\n", student.id, student.firstName, student.lastName, student.email);
+        fprintf(file, "%s,%s,%s,%s,%s\n", student.id, student.firstName, student.lastName, student.class, student.email);
 
         printf("Student record added successfully!!!!\n");
 
@@ -230,8 +234,8 @@ int viewStudents()
     }
 
     fgets(line, sizeof(line), file);
-    printf("%-10s %-15s %-15s %-30s\n", "ID", "First Name", "Last Name", "Email");
-    printf("%-10s %-15s %-15s %-30s\n", "-----", "----------", "----------", "-----------------------");
+    printf("%-10s %-15s %-15s %-10s %-30s\n", "ID", "First Name", "Last Name", "Class", "Email");
+    printf("%-10s %-15s %-15s %-10s %-30s\n", "-----", "----------", "----------", "------", "-----------------------");
 
     while(fgets(line, sizeof(line), file) != NULL)
     {
@@ -246,8 +250,12 @@ int viewStudents()
         if (token != NULL) strcpy(student.lastName, token);
 
         token = strtok(NULL, ",");
+        if (token != NULL) strcpy(student.class, token);
+
+        token = strtok(NULL, ",");
         if (token != NULL) strcpy(student.email, token);
-        printf("%-10s %-15s %-15s %-30s\n", student.id, student.firstName, student.lastName, student.email);
+
+        printf("%-10s %-15s %-15s %-10s %-30s\n", student.id, student.firstName, student.lastName, student.class, student.email);
 
     }
     fclose(file);
@@ -350,11 +358,14 @@ int updateStudents()
             printf("Enter Last Name: ");
             scanf(" %s", student.lastName);
 
+            printf("Enter Class: ");
+            scanf(" %10[^\n]", student.class);
+
             printf("Enter Email: ");
             scanf(" %s", student.email);
 
-            snprintf(line[skip_index], LINE_LENGTH, "%s,%s,%s,%s\n",
-                     id, student.firstName, student.lastName, student.email);
+            snprintf(line[skip_index], LINE_LENGTH, "%s,%s,%s,%s,%s\n",
+                    id, student.firstName, student.lastName, student.class, student.email);
         }
         count++;
     }
@@ -415,14 +426,16 @@ int searchStudents()
             token = strtok(NULL, ",");
             strcpy(student.lastName, token);
             token = strtok(NULL, ",");
+            strcpy(student.class, token);
+            token = strtok(NULL, ",");
             strcpy(student.email, token);
             student.email[strcspn(student.email, "\n")] = 0;
             if (found == 1)
             {
-                printf("%-10s %-15s %-15s %-30s\n", "ID", "First Name", "Last Name", "Email");
-                printf("%-10s %-15s %-15s %-30s\n", "-----", "----------", "----------", "-----------------------");
+                printf("%-10s %-15s %-15s %-10s %-30s\n", "ID", "First Name", "Last Name", "Class", "Email");
+                printf("%-10s %-15s %-15s %-10s %-30s\n", "-----", "----------", "----------", "------", "-----------------------");
             }
-            printf("%-10s %-15s %-15s %-30s\n", student.id, student.firstName, student.lastName, student.email);
+            printf("%-10s %-15s %-15s %-10s %-30s\n", student.id, student.firstName, student.lastName, student.class, student.email);
         }
         count++;
     }
